@@ -4,11 +4,9 @@ import json
 import re
 import string
 import torch
-import os
 import copy
 
-from itertools import combinations
-from nltk import sent_tokenize, word_tokenize
+from nltk import sent_tokenize
 import numpy as np
 from rouge_score import rouge_scorer, scoring
 from tqdm import tqdm
@@ -25,43 +23,13 @@ from transformers import (
     pipeline
 )
 
+from utils import normalize_answer, get_max_memory, remove_citations
+
 QA_MODEL="gaotianyu1350/roberta-large-squad"
 AUTOAIS_MODEL="google/t5_xxl_true_nli_mixture"
-DECONTEXT_MODEL="gaotianyu1350/decontextualizer-t5-3b"
 
-global autoais_model, autoais_tokenizer, decon_model, decon_tokenizer
-autoais_model, autoais_tokenizer, decon_model, decon_tokenizer = None, None, None, None
-
-
-def get_max_memory():
-    """Get the maximum memory available for the current GPU for loading models."""
-    free_in_GB = int(torch.cuda.mem_get_info()[0]/1024**3)
-    max_memory = f'{free_in_GB-6}GB'
-    n_gpus = torch.cuda.device_count()
-    max_memory = {i: max_memory for i in range(n_gpus)}
-
-
-def remove_citations(sent):
-    return re.sub(r"\[\d+", "", re.sub(r" \[\d+", "", sent)).replace(" |", "").replace("]", "")
-
-
-def normalize_answer(s):
-    """Lower text and remove punctuation, articles and extra whitespace."""
-
-    def remove_articles(text):
-        return re.sub(r'\b(a|an|the)\b', ' ', text)
-
-    def white_space_fix(text):
-        return ' '.join(text.split())
-
-    def remove_punc(text):
-        exclude = set(string.punctuation)
-        return ''.join(ch for ch in text if ch not in exclude)
-
-    def lower(text):
-        return text.lower()
-
-    return white_space_fix(remove_articles(remove_punc(lower(s))))
+global autoais_model, autoais_tokenizer
+autoais_model, autoais_tokenizer = None, None
 
 
 def compute_f1(a_gold, a_pred):
@@ -305,11 +273,6 @@ def _run_nli_autoais(passage, claim):
     input_text = "premise: {} hypothesis: {}".format(passage, claim)
     input_ids = autoais_tokenizer(input_text, return_tensors="pt").input_ids.to(autoais_model.device)
     with torch.inference_mode():
-        # For debug (check the probability):
-        # token1 = 209 # "_1"
-        # outputs = autoais_model(input_ids, decoder_input_ids=torch.tensor([[0]]).long().to(autoais_model.device))
-        # prob = torch.nn.functional.softmax(outputs[0][0][-1], -1)[token1].item() # "_1"'s probability
-        # print(prob)
         outputs = autoais_model.generate(input_ids, max_new_tokens=10)
     result = autoais_tokenizer.decode(outputs[0], skip_special_tokens=True)
     inference = 1 if result == "1" else 0
@@ -323,6 +286,7 @@ def compute_claims(data):
         autoais_model = AutoModelForSeq2SeqLM.from_pretrained(AUTOAIS_MODEL, torch_dtype=torch.bfloat16, max_memory=get_max_memory(), device_map="auto")
         autoais_tokenizer = AutoTokenizer.from_pretrained(AUTOAIS_MODEL, use_fast=False)
 
+    logger.info("Computing claims...")
     scores = []
     for item in tqdm(data):
         normalized_output = remove_citations(item['output'])
@@ -335,12 +299,10 @@ def compute_claims(data):
 
 
 def compute_autoais(data,
-                    citation=False,
                     decontext=False,
                     concat=False,
                     qampari=False,
-                    at_most_citations=None,
-                    precision_v2=False):
+                    at_most_citations=None,):
     """
     Compute AutoAIS score.
 
@@ -357,38 +319,7 @@ def compute_autoais(data,
         autoais_model = AutoModelForSeq2SeqLM.from_pretrained(AUTOAIS_MODEL, torch_dtype=torch.bfloat16, max_memory=get_max_memory(), device_map="auto")
         autoais_tokenizer = AutoTokenizer.from_pretrained(AUTOAIS_MODEL, use_fast=False)
 
-    global decon_model, decon_tokenizer
-    if decontext and decon_model is None:
-        logger.info("Loading Decontextualization model...")
-        decon_model = AutoModelForSeq2SeqLM.from_pretrained(DECONTEXT_MODEL, torch_dtype=torch.bfloat16, max_memory=get_max_memory(), device_map="auto")
-        decon_tokenizer = AutoTokenizer.from_pretrained(DECONTEXT_MODEL, use_fast=False)
-
-    logger.info(f"Running AutoAIS (citation: {citation}, concat: {concat}, decontext: {decontext})...")
-
-    def _run_decontextualization(context, sent, title):
-        """Run decontextualization on one sentence."""
-
-        marked_sent = "</s> {} </s>".format(sent)
-        context = context.replace(sent, marked_sent)
-        input_text = "{} </s> {}".format(title, context)
-        input_ids = decon_tokenizer([input_text], return_tensors="pt").input_ids.to(decon_model.device)
-        with torch.inference_mode():
-            outputs = decon_model.generate(input_ids, max_new_tokens=128)
-        generation = decon_tokenizer.decode(outputs[0], skip_special_tokens=True)
-        try:
-            _, decon_sent = generation.split("###")
-        except ValueError:
-            decon_sent = sent
-            logger.warning(f"Failed decontext ({sent} -> {generation})")
-
-        # In rare cases, the decontextualization model returns the first sentence in the context.
-        # We backoff to the original sentence in this case.
-        if compute_f1(decon_sent, sent) < 0.5:
-            logger.warning(f"Potential wrong decontextualization (word F1 < 0.5): {sent} -> {decon_sent}), back off to the original sentence.")
-            decon_sent = sent
-
-        return decon_sent
-
+    logger.info(f"Running AutoAIS...")
 
     def _format_document(doc):
         """Format document for AutoAIS."""
@@ -405,8 +336,6 @@ def compute_autoais(data,
     sent_total = 0
     sent_mcite = 0
     sent_mcite_support = 0
-    sent_mcite_single_support = 0
-    sent_mcite_nosubset_support = 0
     sent_mcite_overcite = 0
     autoais_log = []
     for item in tqdm(data):
@@ -415,76 +344,51 @@ def compute_autoais(data,
             sents = [item['question'] + " " + x.strip() for x in item['output'].rstrip().rstrip(".").rstrip(",").split(",")]
         else:
             sents = sent_tokenize(item['output'])
-        normalized_output = remove_citations(item['output'])
         if len(sents) == 0:
             continue
-        if decontext:
-            target_sents = []
-            for sent in sents:
-                normalized_sent = remove_citations(sent)
-                # We just use the first retrieved doc's title for decontextualization (doesn't matter much)
-                decon_sent = _run_decontextualization(normalized_output, normalized_sent, item['question'].rstrip(string.punctuation)).strip()
-                logger.info(f"Decontext:\n{sent} ->\n{decon_sent}")
-                target_sents.append(decon_sent)
-        else:
-            target_sents = [remove_citations(sent).strip() for sent in sents]
+
+        target_sents = [remove_citations(sent).strip() for sent in sents]
 
         entail = 0
         entail_prec = 0
         total_citations = 0
         for sent_id, sent in enumerate(sents):
             target_sent = target_sents[sent_id] # Citation removed and (if opted for) decontextualized
-            flag = -1 # Undecided
+            joint_entail = -1 # Undecided
 
-            if citation:
-                # Find references
-                ref = [int(r[1:])-1 for r in re.findall(r"\[\d+", sent)] # In text citation id starts from 1
-                logger.info(f"For `{sent}`, find citations {ref}")
-                if len(ref) == 0:
-                    # No citations
-                    flag = 0
-                elif any([ref_id >= len(item['docs']) for ref_id in ref]):
-                    # Citations out of range
-                    flag = 0
-                else:
-                    if at_most_citations is not None:
-                        ref = ref[:at_most_citations]
-                    total_citations += len(ref)
-                    passage = '\n'.join([_format_document(item['docs'][psgs_id]) for psgs_id in ref])
-                    references = [passage]
+            # Find references
+            ref = [int(r[1:])-1 for r in re.findall(r"\[\d+", sent)] # In text citation id starts from 1
+            logger.info(f"For `{sent}`, find citations {ref}")
+            if len(ref) == 0:
+                # No citations
+                joint_entail = 0
+            elif any([ref_id >= len(item['docs']) for ref_id in ref]):
+                # Citations out of range
+                joint_entail = 0
             else:
-                if concat:
-                    passage = '\n'.join(_format_document(psgs) for psgs in item['docs'])
-                    references = [passage]
-                else:
-                    references = [_format_document(psgs) for psgs in item['docs']]
+                if at_most_citations is not None:
+                    ref = ref[:at_most_citations]
+                total_citations += len(ref)
+                joint_passage = '\n'.join([_format_document(item['docs'][psgs_id]) for psgs_id in ref])
 
-            if flag == -1: # If not directly rejected by citation format error
-                flag = 0
-                for reference in references:
-                    flag = _run_nli_autoais(reference, target_sent)
-                    autoais_log.append({
-                        "question": item['question'],
-                        "output": item['output'],
-                        "claim": sent,
-                        "passage": reference,
-                        "model_type": "NLI",
-                        "model_output": flag,
-                    })
-                    if flag == 1:
-                        break
+            # If not directly rejected by citation format error, calculate the recall score
+            if joint_entail == -1: 
+                joint_entail = _run_nli_autoais(joint_passage, target_sent)
+                autoais_log.append({
+                    "question": item['question'],
+                    "output": item['output'],
+                    "claim": sent,
+                    "passage": [joint_passage],
+                    "model_type": "NLI",
+                    "model_output": joint_entail,
+                })
 
-            entail += flag
+            entail += joint_entail
             if len(ref) > 1:
                 sent_mcite += 1
 
-            if citation and flag and len(ref) > 1:
-                print()
-                print("---------------------") 
-                print(f"Question: {item['question']}")
-                print(f"Sentence: {sent}")
-                for doc_id in ref:
-                    print(f"Document [{doc_id}](Title: {item['docs'][doc_id]['title']}): {item['docs'][doc_id]['text']}")
+            # calculate the precision score if applicable
+            if joint_entail and len(ref) > 1:
                 sent_mcite_support += 1
                 # Precision check: did the model cite any unnecessary documents?
                 for psgs_id in ref:
@@ -505,16 +409,12 @@ def compute_autoais(data,
                             entail_prec += 1
                     else:
                         entail_prec += 1
-
-
-                # entail_prec += flag
-            elif citation and flag:
-                entail_prec += flag
+            else:
+                entail_prec += joint_entail 
 
         sent_total += len(sents)
         ais_scores.append(entail / len(sents))
-        if citation:
-            ais_scores_prec.append(entail_prec / total_citations if total_citations > 0 else 0) # len(sents))
+        ais_scores_prec.append(entail_prec / total_citations if total_citations > 0 else 0) # len(sents))
 
     if sent_mcite > 0 and sent_mcite_support > 0:
         print("Among all sentences, %.2f%% have multiple citations, among which %.2f%% are supported by the joint set, among which %.2f%% overcite." % (
@@ -523,21 +423,10 @@ def compute_autoais(data,
             100 * sent_mcite_overcite / sent_mcite_support
         ))
 
-    # if sent_mcite > 0 and sent_mcite_support > 0:
-    #     print("Among all sentences, %.2f%% have multiple citations, among which %.2f%% are supported by the joint set, among which %.2f%% are supported by each single citation; %.2f%% are only supported by the joint set; %.2f%% overcite." % (
-    #         100 * sent_mcite / sent_total, 
-    #         100 * sent_mcite_support / sent_mcite, 
-    #         100 * sent_mcite_single_support / sent_mcite_support, 
-    #         100 * sent_mcite_nosubset_support / sent_mcite_support, 
-    #         100 * (sent_mcite_support - sent_mcite_single_support - sent_mcite_nosubset_support) / sent_mcite_support
-    #     ))
-    if citation:
-        return {
-            "citation_rec": 100 * np.mean(ais_scores),
-            "citation_prec": 100 * np.mean(ais_scores_prec),
-        }
-    else:
-        return 100 * np.mean(ais_scores),
+    return {
+        "citation_rec": 100 * np.mean(ais_scores),
+        "citation_prec": 100 * np.mean(ais_scores_prec),
+    }
 
 
 def compute_qampari_f1(data, cot=False):
@@ -559,7 +448,6 @@ def compute_qampari_f1(data, cot=False):
         preds = [normalize_answer(x.strip()) for x in o.rstrip().rstrip(".").rstrip(",").split(",")]
         preds = [p for p in preds if len(p) > 0] # delete empty answers
         num_preds.append(len(preds))
-        # answers = [normalize_answer(x) for x in item['answers']]
         answers = [[normalize_answer(x) for x in ans] for ans in item['answers']]
         flat_answers = [item for sublist in answers for item in sublist]
         
@@ -591,17 +479,12 @@ def main():
     parser.add_argument("--no_rouge", action="store_true", help="Do not evaluate ROUGE score")
     parser.add_argument("--qa", action="store_true", help="Use the QA model")
     parser.add_argument("--mauve", action="store_true", help="Use the mauve score model")
-    parser.add_argument("--autoais", action="store_true", help="AIS evaluation")
-    parser.add_argument("--autoais_citation", action="store_true", help="AIS evaluation with citation")
-    parser.add_argument("--precision_v2", action="store_true", help="Use new citation precision")
+    parser.add_argument("--citations", action="store_true", help="Evaluation with citation")
     parser.add_argument("--at_most_citations", type=int, default=3, help="At most take this many documents (mostly for precision)")
-    parser.add_argument("--autoais_concat", action="store_true", help="AIS evaluation where all documents are concatenated instead of separately evaluated")
-    parser.add_argument("--decontext", action="store_true", help="Decontextualize sentences before AutoAIS")
     parser.add_argument("--claims_nli", action="store_true", help="Use claims for ELI5")
 
     # QAMPARI
-    parser.add_argument("--cot", action="store_true", help="For QAMPARI, try to find colon and separate the COT and ansewr listing")
-
+    parser.add_argument("--cot", action="store_true", help="For QAMPARI, try to find colon and separate the COT and answer listing")
 
     args = parser.parse_args()
 
@@ -642,27 +525,13 @@ def main():
         result.update(compute_qa(normalized_data))
     if args.mauve:
         result['mauve'] = compute_mauve(normalized_data)
-    if args.decontext:
-        if args.autoais:
-            result['autoais_decontext'] = compute_autoais(data, decontext=True)
-        if args.autoais_citation:
-            ret = compute_autoais(data, citation=True, decontext=True, at_most_citations=args.at_most_citations, precision_v2=args.precision_v2)
-            for k in ret:
-                result[k + "_decontext"] = ret[k]
-        if args.autoais_concat:
-            result['autoais_concat_decontext'] = compute_autoais(data, concat=True, decontext=True)
-    else:
-        if args.autoais:
-            result['autoais'] = compute_autoais(data, qampari=qampari)
-        if args.autoais_citation:
-            result.update(compute_autoais(data, citation=True, qampari=qampari, at_most_citations=args.at_most_citations, precision_v2=args.precision_v2))
-        if args.autoais_concat:
-            result['autoais_concat'] = compute_autoais(data, concat=True, qampari=qampari)
+    if args.citations: 
+        result.update(compute_autoais(data, qampari=qampari, at_most_citations=args.at_most_citations))
     if args.claims_nli:
         result["claims_nli"] = compute_claims(normalized_data)
 
     print(result)
-    json.dump(result, open(args.f + (".decontext" if args.decontext else "") + ".score", "w"), indent=4)
+    json.dump(result, open(args.f + ".score", "w"), indent=4)
 
 
 if __name__ == "__main__":
