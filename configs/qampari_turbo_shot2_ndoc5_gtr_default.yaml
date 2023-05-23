@@ -1,0 +1,9 @@
+---
+prompt_file: prompts/qampari_default.json
+eval_file: data/qampari_eval_gtr_top100.json
+shot: 2
+ndoc: 5
+dataset_name: qampari
+tag: gtr
+model: gpt-3.5-turbo-0301
+openai_api: true

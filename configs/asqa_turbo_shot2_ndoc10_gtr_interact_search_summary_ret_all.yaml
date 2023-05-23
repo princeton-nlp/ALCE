@@ -1,0 +1,14 @@
+---
+prompt_file: prompts/asqa_interact_search.json
+eval_file: data/asqa_eval_gtr_top100.json
+shot: 2
+ndoc: 10
+dataset_name: asqa
+tag: gtr_interact_search_summary_ret_all
+model: gpt-3.5-turbo-0301
+openai_api: true
+use_shorter: summary
+interactive: true
+interactive_query: search
+retriever: gtr-t5-large
+retrieve_in_all_docs: true
