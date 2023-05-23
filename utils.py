@@ -26,6 +26,19 @@ def normalize_answer(s):
     return white_space_fix(remove_articles(remove_punc(lower(s))))
 
 
+def remove_citations(sent):
+    return re.sub(r"\[\d+", "", re.sub(r" \[\d+", "", sent)).replace(" |", "").replace("]", "")
+
+
+def get_max_memory():
+    """Get the maximum memory available for the current GPU for loading models."""
+    free_in_GB = int(torch.cuda.mem_get_info()[0]/1024**3)
+    max_memory = f'{free_in_GB-6}GB'
+    n_gpus = torch.cuda.device_count()
+    max_memory = {i: max_memory for i in range(n_gpus)}
+    return max_memory
+
+
 def make_doc_prompt(doc, doc_id, doc_prompt, use_shorter=None):
     # For doc prompt:
     # - {ID}: doc id (starting from 1)
@@ -90,14 +103,9 @@ def load_model(model_name_or_path, dtype=torch.float16, int8=False, reserve_memo
     # int8: whether to use int8 quantization
     # reserve_memory: how much memory to reserve for the model on each gpu (in GB)
 
-    # Get GPU information
-    free_in_GB = int(torch.cuda.mem_get_info()[0]/1024**3)
-    max_memory = f'{free_in_GB-reserve_memory}GB'
-    n_gpus = torch.cuda.device_count()
-    max_memory = {i: max_memory for i in range(n_gpus)}
-
     # Llama: set up the root dir
-    if "llama" in model_name_or_path or "alpaca" in model_name_or_path:
+    open_source_models = ["llama", "alpaca", "vicuna", "oasst"]
+    if any([m in model_name_or_path for m in open_source_models]):
         model_name_or_path = os.path.join(os.environ["LLAMA_ROOT"], model_name_or_path)
 
     # Load the FP16 model
@@ -110,7 +118,7 @@ def load_model(model_name_or_path, dtype=torch.float16, int8=False, reserve_memo
         model_name_or_path,
         device_map='auto',
         torch_dtype=dtype,
-        max_memory=max_memory,
+        max_memory=get_max_memory(),
         load_in_8bit=int8,
     )
     logger.info("Finish loading in %.2f sec." % (time.time() - start_time))
