@@ -1,0 +1,112 @@
+{
+    "instruction": "Instruction: Write an accurate, engaging, and concise answer for the given question using only the provided search results (some of which might be irrelevant) and cite them properly. Use an unbiased and journalistic tone. Always cite for any factual claim. When citing several search results, use [1][2][3]. Cite at least one document and at most three documents in each sentence. If multiple documents support the sentence, only cite a minimum sufficient subset of the documents.",
+    "demo_sep": "\n\n\n",
+    "demo_prompt": "{INST}\n\nQuestion: {Q}\n\n{D}\nAnswer: {A}",
+    "doc_prompt": "Document [{ID}](Title: {T}): {P}\n",
+    "demos": [
+        {
+            "question": "Why did New York City try to ban food donations to the poor?",
+            "answer": "New York City, under Mayor Michael Bloomberg's administration, banned citizens from donating food directly to homeless shelters because the city could not assess the salt, fat, and fiber content [1][2][3]. Bloomberg's administration was heavily criticized for losing their common sense by becoming too focused on what people eat [2].",
+            "docs": [
+                {
+                    "title": "The Future Of America", 
+                    "text": "believe that they are \u201chelping\u201d the homeless by passing such laws. In New York City, Mayor Bloomberg has banned citizens from donating food directly to homeless shelters and he is actually convinced that it was the right thing to do for the homeless\u2026 Mayor Michael Bloomberg\u2019s food police have struck again! Outlawed are food donations to homeless shelters because the city can\u2019t assess their salt, fat and fiber content, reports CBS 2\u2019s Marcia Kramer. Glenn Richter arrived at a West Side synagogue on Monday to collect surplus bagels \u2014 fresh nutritious bagels \u2014 to donate to the poor."
+                },
+                {
+                    "title": "mayor bloomberg", 
+                    "text": "Amuck: Bloomberg Bans Food Donations in New York City Food Might Be Salty or Too High in Calories, City Explains Washington, D.C. \u2013 New York Mayor Michael Bloomberg\u2019s administration is now banning all food being offered to the city\u2019s homeless shelters. New York City\u2019s bureaucrats have become so singularly focused on what people eat, says the National Center for Public Policy Research, that they\u2019ve lost their common sense. \u201cSo much for serving the homeless: The Bloomberg administration is now taking the term \u2018food police\u2019 to new depths, blocking food donations to all government-run facilities that serve the"
+                },
+                {
+                    "title": "New York City bans food donations - WND", 
+                    "text": "New York City bans food donations - WND Front Page Health U.S. New York City bans food donations Inability to control 'nutritional content' cited as reason New York City homeless shelters have Mayor Michael Bloomberg to thank for a halt in food donations, for which hungry families are waiting, according to one public policy advocate. \"The Bloomberg administration is now taking the term 'food police' to new depths, blocking food donations to all government-run facilities that serve the city's homeless,\" says Jeff Stier, a National Center for Public Policy Research senior fellow. Currently, no food can be given to government-run, New York City facilities, despite hungry crowds perfectly"
+                },
+                {
+                    "title": "New York City bans food donations - WND", 
+                    "text": "New York City bans food donations - WND Services didn't return WND calls. Stier told WND that he specifically was told by Diamond that the policy was tied to the nutritional guidelines set by the mayor. \"They can say that this ban on donations is a long-standing policy, but they can\u2019t document it,\" Stier told WND. \"I've also been told that there are numerous food shelves that have been accepting food donations, not just one.\" Stier is a member of a New York Synagogue that has donated food for over a decade. He is outraged that the DHS' response to his demand to know why the practice can"
+                },
+                {
+                    "title": "New York City bans food donations - WND", 
+                    "text": "New York City bans food donations - WND ban on donated food. In fact, it thrives because of food donations. New York City Rescue Mission has been providing food, clothing, shelter and spiritual hope for needy New Yorkers since 1872. \"We feed over 500 people a day, all through donations,\" said James Varnhagen, NYCRM director. \"Boxed food, canned food, prepared food, we take any food,\" he told WND. \"We couldn't survive without donations,\" he said."
+                }
+            ]
+        },
+        {
+            "question": "What's the difference between Shia vs. Sunni Islam?",
+            "answer": "The main difference between Shia and Sunni Muslim is related to ideological heritage and issues of leadership [1]. This difference is first formed after the death of the Prophet Muhammad in 632 A.D. [1][2]. The ideological practice of the Sunni branch strictly follows Prophet Muhammad and his teachings, while the Shia branch follows Prophet Muhammad's son-in-law Ali [2]. Nowadays, Sunni and Shia are the major branches of Islam [3].",
+            "docs": [
+                {
+                    "title": "The Sunni vs Shia Divide - Explained - Globaloi", 
+                    "text": "centuries-long strained relationship between Sunnis and Shias. As a scholar of Islam and a public educator, I often field questions about Sunnis, Shias and the sects of Islam. What exactly is the Shia-Sunni divide? And what is its history? History of divide Both Sunnis and Shias \u2013 drawing their faith and practice from the Qur\u2019an and the life of the Prophet Muhammad \u2013 agree on most of the fundamentals of Islam. The differences are related more to historical events, ideological heritage and issues of leadership. The first and central difference emerged after the death of Prophet Muhammad in A.D. 632."
+                },
+                {
+                    "title": "What\u2019s the difference between Sunni and Shia Islam? \u2013 Macrosnaps", 
+                    "text": "What\u2019s the difference between Sunni and Shia Islam? Sunni and Shia identities (the 2 main branches of Islam) first formed around a dispute over leadership succession after the death of the Prophet Muhammad in 632 A.D. Sunni is the larger branch (estimated 85-90% of total world Muslim population) and it's adherents are referred to as \"people of the tradition of Muhammad\", while Shia are \"followers\" of Muhammad's son-in-law and cousin Ali. Sunnis rely heavily on the practice of the Prophet Muhammad and his teachings, the Shia view their ayatollahs as reflections of God on earth. What challenges does the anti-IS"
+                },
+                {
+                    "title": "Difference between Sunni and Shia Muslims | Sunni vs Shia Muslims", 
+                    "text": "of Muhammad, the last prophet of God. A follower of Islam is known as a Muslim. Many Muslims believe that their sole purpose is to worship and serve God, for which they have established five pillars of Islam that guides a Muslim on almost every aspect of life and society. Due to differences, Muslims have been divided into two primary sects: The Sunnis and the Shias. These two sects have many similarities and both consider themselves are Muslims, following the will of God. However, they are also different from each other in certain aspects. Both the Sunnis and the Shias,"
+                },
+                {
+                    "title": "What is the difference between Shia and Sunni Islam? - Islam Stack Exchange", 
+                    "text": "What is the difference between Shia and Sunni Islam? - Islam Stack Exchange between Mutah marriage and Misyar marriage? What theological and historical factors distinguish Ibadi Islam from either Shia or Sunni schools? What are the principle/fundamental differences between Sunni and Shia? Nikah between a Sunni girl and Shia boy What is the difference between \u201cMubtalat-of-Wudu\u201d of Shia and Sunni? How can the Hadith be reliable when Sunnis and Shia follow different points of reference? Rejection of Mutawatir Hadith in Sunni Islam and Shia Islam"
+                },
+                {
+                    "title": "What is the difference between Sunni and Shia Islam? | Patrick Syder Travel", 
+                    "text": "What is the difference between Sunni and Shia Islam? | Patrick Syder Travel What is the difference between Sunni and Shia Islam? This Channel 4 link answers some of the key questions about the difference between Sunni and Shia Islam and alarmingly, the politics on what is happening and why, in Syria\u2026\u2026. http://www.channel4.com/news/sunni-shia-islam-muslim-syria-middle-east-key-questions \u2190 Ethiopia Appeal \u2013 Help sponsor a nurse to train and to help others G\u00f6bekli Tepe, Turkey: a new wonder of the ancient world by Jeremy Seal (Telegraph Travel Section 23/04/2013) \u2192"
+                }
+            ]
+        },
+        {
+            "question": "What causes Bi-polar disorder?",
+            "answer": "Bipolar disorder is an emotional disorder that causes extreme mood swings between excitement and depression [1][3]. The spectrum of mood swing may span from days to months [1][2]. We are still not certain of the exact factors that cause such disorder, but genetics is considered a major factor [2][3].",
+            "docs": [
+                {
+                    "title": "Bi-polar disorder | definition of Bi-polar disorder by Medical dictionary", 
+                    "text": "bi-polar disorder | definition of bi-polar disorder by medical dictionary https://medical-dictionary.thefreedictionary.com/bi-polar+disorder (redirected from bi-polar disorder) related to bi-polar disorder: depression bipolar disorder, formerly known as manic depression, is a mood disorder that causes radical emotional changes and mood swings, from manic, restless highs to depressive, listless lows. most bipolar individuals experience alternating episodes of mania and depression. bipolar disorder is characterized by alternating manic episodes in which the individual feels abnormally euphoric, optimistic, and energetic and depressive periods in which the individual feels sad, hopeless, guilty, and sometimes suicidal. manic or depressive periods may last for days, weeks, or months"
+                },
+                {
+                    "title": "Mania and Bi-Polar", 
+                    "text": "can go from depressed to \u201csuper happy\u201d all in one day, or even in a few days, does not have a bi-polar disorder Bi-polar looks different depending on the severity of the symptoms. Most bi-polar diagnoses that are made are for bi-polar 2, with bi-polar 1 being much more rare. Bi-polar 1 is so severe that the individual will have periods of such agitation, or such reckless and seemingly foolish behavior that they put themselves or those around them in danger. It is not completely clear what causes bi-polar, but genetics seem to have a large role. The biggest factor"
+                },
+                {
+                    "title": "Bi-Polar disorder", 
+                    "text": "Bi-Polar disorder Bi-polar is generally a cyclic disease where individuals display depressive and elevated episodes at regular intervals. It is a disorder resulting from the imbalance of the chemicals in the brain that causes a lot of fluctuations of mood. It is a fact that we all experience happy and sad moods, but people with bi-polar disorder experience the changes in mood at an increased level. The cause of this disorder is not known completely. However, it is estimated that there are different factors responsible for it. It is often connected to a genetic component. People suffering from the Bi-polar disorder are"
+                },
+                {
+                    "title": "For Individuals \u2014 Adam Schwartz", 
+                    "text": "For Individuals \u2014 Adam Schwartz The information is extensive and covers a huge range of topics. Some of the topics include the different types of bi-polar, what it feels like, signs and symptoms, treatments and more. Black Dog Institute bi-polar causes resource specifically covers the variety of areas that could potentially be a cause of bi-polar disorder. Including genetics, environmental factors, pregnancy, and more. Black Dog Institute bi-polar treatments resource specifically covers multiple potential treatments options for bi-polar. Including management, types of psychological treatment, lifestyle changes, and more. Black Dog Institute bi-polar self-test resource is a short self-test for people who may be concerned if"
+                },
+                {
+                    "title": "Depression Bi-polar Disorder Symptoms 2019 | Win Over Depression", 
+                    "text": "Depression Bi-polar Disorder Symptoms 2019 | Win Over Depression signs and symptoms of bipolar disorder. Learn more about the common symptoms of bipolar depression that some patients may experience. Home \u00bb Trending Health News \u00bb 10 Warning Signs of Bipolar Disorder: Depression. One of the most serious symptoms of bipolar disorder is. Bi Polar Depression. SEVERE SWINGS What is bipolar disorder, is it the same as manic depression, what are the symptoms and is there a cure? Bipolar disorder, or manic depression, causes symptoms of mania and depression. Read about bipolar disorder treatment, medications, and causes of this. Learn more about the different types of bipolar disorder. Find out"
+                }
+            ]
+        },
+        {
+            "question": "How do student loans affect getting a mortgage?",
+            "answer": "When applying for a mortgage, student loans can affect the debt to income ratio, which is a key factor in determining the amount that an individual can afford to pay for the mortgage [1]. While student loan repayments do not appear in an individual's credit history and do not affect credit scores, lenders do consider the amount of an individual's student loan repayments when assessing their mortgage application [1][2][3]. Some 83% of non-homeowners say student loan debt is preventing them from buying a home, according to the National Association of Realtors [2]. It is important to note that student loans do not prevent an individual from getting a mortgage [1].",
+            "docs": [
+                {
+                    "title": "Student Loans \u2013 How do they work? | The Financial Review", 
+                    "text": "typical debt. Student loan repayments do not appear in an individual\u2019s credit history, therefore there are no implications whatsoever. This also extends to applications for credit cards \u2013 student \u2018loans\u2019 are not acknowledged. One noteworthy aspect that is affected by student loans however, is mortgage applications. Nevertheless, it does not prevent an individual from getting a mortgage. For example, lenders will consider the amount of an individual\u2019s student loan repayments in order to assess the debt to income ratio and therefore establish the amount that the individual can afford to pay for the mortgage. Just as they do with other"
+                },
+                {
+                    "title": "How Does Student Loan Debt Affect Buying a Home? | Experian", 
+                    "text": "Rates & Affordability How Student Loans Affect Getting a Mortgage Student Loan Impact on Credit Scores Other Factors for Getting Approved for a Mortgage If you're a recent college grad and hope to become a homeowner in the near future, you should know that student loan debt could affect buying a home by making it more difficult to get a mortgage. Some 83% of non-homeowners say student loan debt is preventing them from buying a home, according to the National Association of Realtors (NAR). But while student loan payments can make it harder to save for a down payment on"
+                },
+                {
+                    "title": "Studentloanify - How your student loans affect your home mortgage prospects", 
+                    "text": "Though it may not seem fair, your student loan situation impacts your home mortgage outlook. Many people carry student loan debt, but it\u2019s the amount of the loan and how you handle your student loan repayment plan that will influence your ability to get a home mortgage as well as what your interest rate will be. Here are some specific factors about your student loan that will affect your home mortgage prospects. On your mortgage loan application, you will have to report how much your monthly student loan payment is. This amount will be deducted from your monthly gross income"
+                },
+                {
+                    "title": "How do student loans affect your credit score? | Student Loan Planner", 
+                    "text": "How do student loans affect your credit score? | Student Loan Planner Your credit score is the three-digit number that dictates a lot in your adult life. Whether you\u2019re applying for a mortgage or looking to get an auto loan, this seemingly arbitrary number determines whether you get approved for a loan and also affects your interest rate. If you\u2019re a student loan borrower you may wonder, \u201cDo student loans affect credit score?\u201d You might be especially curious if you\u2019re in the process of applying for a mortgage. Here\u2019s how student loans affect your credit score and what to know for big life events, like getting a mortgage. Do student loans affect"
+                },
+                {
+                    "title": "Does Student Loan Debt Affect Getting A Mortgage?", 
+                    "text": "Does Student Loan Debt Affect Getting A Mortgage? Home \u00bb Does Student Loan Debt Affect Getting A Mortgage? Last year, I helped answer a reader\u2019s question about applying for a mortgage while on Income Based Repayment. However, over the last several months, I\u2019ve been getting bombarded with questions about how student loan debt impacts your ability to get a mortgage. Maybe it\u2019s because the housing market is improving, or maybe it\u2019s because people are finally taking their student loan debt seriously. Anyway, I wanted to share a few reader questions and then look at whether student loan debt affects getting a mortgage. Here are the reader questions I\u2019ve"
+                }
+            ]
+        }
+    ]
+}

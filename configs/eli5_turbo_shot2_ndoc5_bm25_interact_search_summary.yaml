@@ -1,0 +1,13 @@
+---
+prompt_file: prompts/eli5_interact_search.json
+eval_file: data/eli5_eval_bm25_top100.json
+shot: 2
+ndoc: 5
+dataset_name: eli5
+tag: bm25_interact_search_summary
+model: gpt-3.5-turbo-0301
+openai_api: true
+use_shorter: summary
+interactive: true
+interactive_query: search
+retriever: gtr-t5-large

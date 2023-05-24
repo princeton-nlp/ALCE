@@ -1,0 +1,10 @@
+---
+prompt_file: prompts/asqa_default.json
+eval_file: data/asqa_eval_gtr_top100.json
+shot: 1
+ndoc: 3
+dataset_name: asqa
+tag: gtr
+model: llama-7b
+temperature: 1.0
+top_p: 0.95

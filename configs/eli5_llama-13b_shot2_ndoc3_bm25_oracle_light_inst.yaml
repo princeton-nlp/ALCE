@@ -1,0 +1,10 @@
+---
+prompt_file: prompts/eli5_light_inst.json
+eval_file: data/eli5_eval_bm25_top100_reranked_oracle.json
+shot: 2
+ndoc: 3
+dataset_name: eli5
+tag: bm25_oracle_light_inst
+model: llama-13b
+temperature: 1.0
+top_p: 0.95

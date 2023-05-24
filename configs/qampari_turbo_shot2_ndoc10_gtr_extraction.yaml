@@ -1,0 +1,10 @@
+---
+prompt_file: prompts/qampari_sum_or_ext.json
+eval_file: data/qampari_eval_gtr_top100.json
+shot: 2
+ndoc: 10
+dataset_name: qampari
+tag: gtr_extraction
+model: gpt-3.5-turbo-0301
+openai_api: true
+use_shorter: extraction

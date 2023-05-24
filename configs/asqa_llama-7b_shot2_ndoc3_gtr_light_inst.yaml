@@ -1,0 +1,10 @@
+---
+prompt_file: prompts/asqa_light_inst.json
+eval_file: data/asqa_eval_gtr_top100.json
+shot: 2
+ndoc: 3
+dataset_name: asqa
+tag: gtr_light_inst
+model: llama-7b
+temperature: 1.0
+top_p: 0.95

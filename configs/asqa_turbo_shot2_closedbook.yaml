@@ -1,0 +1,9 @@
+---
+prompt_file: prompts/asqa_closedbook.json
+eval_file: data/asqa_eval_gtr_top100.json
+shot: 2
+ndoc: 0
+dataset_name: asqa
+tag: closedbook
+model: gpt-3.5-turbo-0301
+openai_api: true
