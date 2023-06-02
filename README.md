@@ -61,7 +61,7 @@ You can also overwrite any arguments in the config file or add new arguments sim
 python run.py --config configs/{config_name} --seed 43 --model vicuna-13b
 ```
 
-* For OpenAI models (for example, ChatGPT), you need to set the environment variable `OPENAI_API_KEY` and `OPENAI_ORG_ID`. If you are using the Azure OpenAI API, you need to set the enviroment variable of `OPENAI_API_KEY` and `OPENAI_API_BASE`. You also need to add the flag `--azure`. 
+* For OpenAI models (for example, ChatGPT), you need to set the environment variable `OPENAI_API_KEY` and `OPENAI_ORG_ID`. If you are using the Azure OpenAI API, you need to set the environment variable of `OPENAI_API_KEY` and `OPENAI_API_BASE`. You also need to add the flag `--azure`. 
     * Note that in Azure OpenAI API, ChatGPT's name is different and you should set it by `--model gpt-35-turbo`. 
 * For the open-source models, you also need to set the environment variable `LLAMA_ROOT` to the directory containing the weights folder for the model. 
 For example, you should be able to load the LLaMA-13B with the following line:
