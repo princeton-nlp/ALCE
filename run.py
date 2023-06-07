@@ -201,7 +201,7 @@ def main():
 
     # Interactive
     parser.add_argument("--interactive", type=bool, default=False, help="Whether to run in interactive mode")
-    parser.add_argument("--interactive_query", type=str, default=None, help="The query to use in interactive mode, either `doc_id` or `search`.")
+    parser.add_argument("--interactive_query", type=str, default=None, help="The query to use in interactive mode, either `doc_id` (corresponding to interact in paper) or `search` (corresponding to inlinesearch in paper).")
     parser.add_argument("--retriever", type=str, default=None, help="When using interactive search mode, which retriever to use. Options: `tfidf`, `gtr-t5-large`")
     parser.add_argument("--retriever_device", type=str, default="cuda", help="Where to put the dense retriever if using. Options: `cuda`, `cpu`")
     parser.add_argument("--retrieve_in_all_docs", type=bool, default=False, help="Retrieve in all documents instead of just top ndoc")
