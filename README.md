@@ -11,9 +11,6 @@ This repository also includes code to reproduce the baselines in our paper.
 
 :bulb: **ALCE** is the latin word for moose.
 
-**************************** **Updates** ****************************
-
-* 5/23: We released the first version of our code. Use at caution! We are still working on cleaning the code to make it more easy to use and the API may change anytime.
 
 
 ## Quick Links
@@ -32,14 +29,6 @@ This repository also includes code to reproduce the baselines in our paper.
 Please install the latest versions of PyTorch (`torch`), HuggingFace Transformers (`transformers`), HuggingFace Accelerate (`accelerate`), and the OpenAI API package (`openai`). This codebase is tested on 
 `torch==2.1.0.dev20230514+cu118`, `transformers==4.28.1`, `accelerate==0.17.1`, and `openai==0.27.4` with Python 3.9.7.
 
-## Code Structure
-
-* `run.py`: run file to reproduce our baseline generations.
-* `eval.py`: eval file to evaluate generations.
-* `prompts`: folder that contains all prompt files.
-* `configs/`: folder that contains all config files to reproduce baselines.
-* `tools/`: misc code (generate summaries/snippets, reranking, etc.)
-
 ## Data
 
 You can download datasets (along with retrieval results) by running the following command:
@@ -49,6 +38,15 @@ bash download_data.sh
 ```
 
 All the data will be stored in `data/`. Our data included top-100 DPR/GTR retrieved results for ASQA and QAMPARI, and top-100 BM25 retrieved results for QAMPARI. We also provide reranked oracle retrieval results, where top-5 passages can achieve the same recall as the original top-100 recall.
+## Code Structure
+
+* `run.py`: run file to reproduce our baseline generations.
+* `eval.py`: eval file to evaluate generations.
+* `prompts`: folder that contains all prompt files.
+* `configs/`: folder that contains all config files to reproduce baselines.
+* `tools/`: misc code (generate summaries/snippets, reranking, etc.)
+
+
 
 
 ## Reproducing Baselines
