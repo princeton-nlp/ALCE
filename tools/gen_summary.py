@@ -5,17 +5,8 @@ from tqdm import tqdm
 from transformers import AutoTokenizer
 import numpy as np
 
-# Tianyu's
-# OPENAI_API_KEY="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"
-# OPENAI_ORG_ID="org-88v5WCw70lUmrxeL7juwE3sR"
-
-# Howard's
-# OPENAI_API_KEY="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"
-# OPENAI_ORG_ID="org-355gwW7yunINf5xcUcHi9AA4"
-
-# Jiatong's
-OPENAI_API_KEY="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"
-OPENAI_ORG_ID="org-JymcrdcYT1DOfXR9mIuxKbNH"
+OPENAI_API_KEY = ""
+OPENAI_ORG_ID = ""
 
 def main():
     parser = argparse.ArgumentParser()

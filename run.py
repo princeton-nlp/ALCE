@@ -28,20 +28,21 @@ class LLM:
 
         if args.openai_api:
             import openai 
+            OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+            OPENAI_ORG_ID = os.environ.get("OPENAI_ORG_ID")
+            OPENAI_API_BASE = os.environ.get("OPENAI_API_BASE")
 
             if args.azure:
-                openai.api_key = ""
-                openai.api_base = ""
+
+                openai.api_key = OPENAI_API_KEY
+                openai.api_base = OPENAI_API_BASE
                 openai.api_type = 'azure'
                 openai.api_version = '2022-12-01' 
             else: 
-                OPENAI_API_KEY = ""
-                OPENAI_ORG_ID = ""
-
-                openai.organization = OPENAI_ORG_ID
                 openai.api_key = OPENAI_API_KEY
+                openai.organization = OPENAI_ORG_ID
 
-            self.tokenizer = AutoTokenizer.from_pretrained("gpt2", fast_tokenizer=False)
+            self.tokenizer = AutoTokenizer.from_pretrained("gpt2", fast_tokenizer=False) # TODO: For ChatGPT we should use a different one
             self.total_tokens = 0 # To keep track of how much the API costs
         else:
             self.model, self.tokenizer = load_model(args.model)
@@ -63,12 +64,11 @@ class LLM:
 
         if args.openai_api:
             if "turbo" in args.model and not args.azure:
-                # Convert text prompt to chat prompt
+                # For OpenAI's ChatGPT API, we need to convert text prompt to chat prompt
                 prompt = [
                     {'role': 'system', 'content': "You are a helpful assistant that answers the following questions with proper citations."},
                     {'role': 'user', 'content': prompt}
                 ]
-                deploy_name = "gpt-35-turbo-0301"
             else:
                 if "turbo" in args.model:
                     deploy_name = "gpt-35-turbo-0301"
@@ -201,7 +201,7 @@ def main():
 
     # Interactive
     parser.add_argument("--interactive", type=bool, default=False, help="Whether to run in interactive mode")
-    parser.add_argument("--interactive_query", type=str, default=None, help="The query to use in interactive mode, either `doc_id` or `search`.")
+    parser.add_argument("--interactive_query", type=str, default=None, help="The query to use in interactive mode, either `doc_id` (corresponding to interact in paper) or `search` (corresponding to inlinesearch in paper).")
     parser.add_argument("--retriever", type=str, default=None, help="When using interactive search mode, which retriever to use. Options: `tfidf`, `gtr-t5-large`")
     parser.add_argument("--retriever_device", type=str, default="cuda", help="Where to put the dense retriever if using. Options: `cuda`, `cpu`")
     parser.add_argument("--retrieve_in_all_docs", type=bool, default=False, help="Retrieve in all documents instead of just top ndoc")
@@ -429,6 +429,8 @@ def main():
         if args.azure:
             eval_data["azure_filter_fail"] = llm.azure_filter_fail 
 
+    if not os.path.exists("result"):
+        os.makedirs("result")
     json.dump(eval_data, open("result/" + name + ".json", "w"), indent=4)
 
 if __name__ == "__main__":
