@@ -43,6 +43,26 @@ bash download_data.sh
 ```
 
 All the data will be stored in `data/`. Our data included top-100 DPR/GTR retrieved results for ASQA and QAMPARI, and top-100 BM25 retrieved results for QAMPARI. We also provide reranked oracle retrieval results, where top-5 passages can achieve the same recall as the original top-100 recall.
+
+### Retrieval
+
+You can reproduce the passage retrieval step with the following command:
+```bash
+python retrieval.py --data {path/to/data} --retriever {bm25/gtr} --output_file {path/to/output}
+```
+
+There are additional packages required for the retrieval steps.
+Specifically, you need to install `pyserini==0.21.0`(their github [repo](https://github.com/castorini/pyserini/tree/master) is helpful) and `sentence-transformers==2.2.2`.
+
+For the BM25 retrieval over Common Crawl using Sphere, you must first download the index from the Sphere [repo](https://github.com/facebookresearch/Sphere), and set the environmental variable `BM25_SPHERE_PATH` to the path of the downloaded index.
+It's important to note that given the large size of the corpus, this step is extremely expensive and time-consuming. We found that larger CPU memory tends to help with the speed. 
+
+For GTR, we first build an index using the DPR wikipedia snapshot, which you can obtain using the download script from the DPR [repo](https://github.com/facebookresearch/DPR), and then setting the environmental variable `DPR_WIKI_TSV` to the path of the tsv file.
+Building the dense index can be expensive for GPU memory (we use 80GB GPUs for this) and time-consuming; the entire index will take about 31GB.
+If you find this step to be too expensive, please contact us and we can help you with obtaining the index.
+
+To reproduce the DPR retrieval, we refer the DPR [repo](https://github.com/facebookresearch/DPR), which we used the original DPR checkpoint trained on NQ.
+
 ## Code Structure
 
 * `run.py`: run file to reproduce our baseline generations.
@@ -50,8 +70,6 @@ All the data will be stored in `data/`. Our data included top-100 DPR/GTR retrie
 * `prompts`: folder that contains all prompt files.
 * `configs/`: folder that contains all config files to reproduce baselines.
 * `tools/`: misc code (generate summaries/snippets, reranking, etc.)
-
-
 
 
 ## Reproducing Baselines
