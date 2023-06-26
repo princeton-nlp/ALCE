@@ -55,9 +55,21 @@ There are additional packages required for the retrieval steps.
 Specifically, you need to install `pyserini==0.21.0`(their github [repo](https://github.com/castorini/pyserini/tree/master) is helpful) and `sentence-transformers==2.2.2`.
 
 For the BM25 retrieval over Common Crawl using Sphere, you must first download the index from the Sphere [repo](https://github.com/facebookresearch/Sphere), and set the environmental variable `BM25_SPHERE_PATH` to the path of the downloaded index.
+Specifically, you can use the following command:
+```bash
+wget -P faiss_index https://dl.fbaipublicfiles.com/sphere/sphere_sparse_index.tar.gz
+tar -xzvf faiss_index/sphere_sparse_index.tar.gz -C faiss_index
+export BM25_SPHERE_PATH=$PWD/faiss_index
+```
 It's important to note that given the large size of the corpus, this step is extremely expensive and time-consuming. We found that larger CPU memory tends to help with the speed. 
 
 For GTR, we first build an index using the DPR wikipedia snapshot, which you can obtain using the download script from the DPR [repo](https://github.com/facebookresearch/DPR), and then setting the environmental variable `DPR_WIKI_TSV` to the path of the tsv file.
+Specifically, you can use the following command:
+```bash
+wget https://dl.fbaipublicfiles.com/dpr/wikipedia_split/psgs_w100.tsv.gz
+gzip -xzvf psgs_w100.tsv.gz
+export DPR_WIKI_TSV=$PWD/psgs_w100.tsv
+```
 Building the dense index can be expensive for GPU memory (we use 80GB GPUs for this) and time-consuming; the entire index will take about 31GB.
 If you find this step to be too expensive, please contact us and we can help you with obtaining the index.
 
