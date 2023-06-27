@@ -70,8 +70,13 @@ wget https://dl.fbaipublicfiles.com/dpr/wikipedia_split/psgs_w100.tsv.gz
 gzip -xzvf psgs_w100.tsv.gz
 export DPR_WIKI_TSV=$PWD/psgs_w100.tsv
 ```
+Then, you want to set `GTR_EMB` to the path of the GTR embeddings of the Wikipedia corpus, and running the retrieval script for the first time will automatically build and save the index.
 Building the dense index can be expensive for GPU memory (we use 80GB GPUs for this) and time-consuming; the entire index will take about 31GB.
-If you find this step to be too expensive, please contact us and we can help you with obtaining the index.
+If you find this step to be too expensive, you can also download it using:
+```bash
+wget https://huggingface.co/datasets/princeton-nlp/gtr-t5-xxl-wikipedia-psgs_w100-index/raw/main/gtr_wikipedia_index.pkl
+export GTR=$PWD/gtr_wikipedia_index.pkl
+```
 
 To reproduce the DPR retrieval, we refer the DPR [repo](https://github.com/facebookresearch/DPR), which we used the original DPR checkpoint trained on NQ.
 
