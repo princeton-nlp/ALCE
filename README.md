@@ -74,7 +74,7 @@ Then, you want to set `GTR_EMB` to the path of the GTR embeddings of the Wikiped
 Building the dense index can be expensive for GPU memory (we use 80GB GPUs for this) and time-consuming; the entire index will take about 31GB.
 If you find this step to be too expensive, you can also download it using:
 ```bash
-wget https://huggingface.co/datasets/princeton-nlp/gtr-t5-xxl-wikipedia-psgs_w100-index/raw/main/gtr_wikipedia_index.pkl
+wget https://huggingface.co/datasets/princeton-nlp/gtr-t5-xxl-wikipedia-psgs_w100-index/resolve/main/gtr_wikipedia_index.pkl
 export GTR=$PWD/gtr_wikipedia_index.pkl
 ```
 
