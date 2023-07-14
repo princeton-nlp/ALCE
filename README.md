@@ -1,6 +1,8 @@
 # Enabling Large Language Models to Generate Text with Citations
 
-<p align="center"><img src="https://github.com/princeton-nlp/ALCE/blob/main/assets/moose.png?raw=true" alt="ALCE" width="10%"></p>
+<p align="center"><img src="https://github.com/princeton-nlp/ALCE/blob/main/assets/moose.png?raw=true" alt="ALCE" width="15%">*: ALCE is pronounced as /elk/ as ALCE is the Latin word for elk (Europe) or moose (North America).
+</p>
+
 
 
 This repository contains the code and data for paper [Enabling Large Language Models to Generate Text with Citations](https://arxiv.org/abs/2305.14627). 
@@ -9,8 +11,6 @@ ALCE contains three datasets: ASQA, QAMPARI, and ELI5.
 We provide automatic evaluation code of LLM generations around three dimensions: fluency, correctness, and citation quality. 
 This repository also includes code to reproduce the baselines in our paper.
 
-
-:bulb: **ALCE** is the latin word for elk (Europe) or moose (North America).
 
 
 <img src="https://github.com/princeton-nlp/ALCE/blob/main/assets/ALCE.png?raw=true" alt="ALCE" width="100%">
