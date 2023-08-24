@@ -67,7 +67,7 @@ For GTR, we first build an index using the DPR wikipedia snapshot, which you can
 Specifically, you can use the following command:
 ```bash
 wget https://dl.fbaipublicfiles.com/dpr/wikipedia_split/psgs_w100.tsv.gz
-gzip -xzvf psgs_w100.tsv.gz
+gzip -d psgs_w100.tsv.gz
 export DPR_WIKI_TSV=$PWD/psgs_w100.tsv
 ```
 Then, you want to set `GTR_EMB` to the path of the GTR embeddings of the Wikipedia corpus, and running the retrieval script for the first time will automatically build and save the index.
