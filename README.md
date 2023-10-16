@@ -115,7 +115,7 @@ Our code support both OpenAI API and offline HuggingFace models:
 
 * For OpenAI models (for example, ChatGPT), you need to set the environment variable `OPENAI_API_KEY` and `OPENAI_ORG_ID`. If you are using the Azure OpenAI API, you need to set the environment variable of `OPENAI_API_KEY` and `OPENAI_API_BASE`. You also need to add the flag `--azure`. 
     * Note that in Azure OpenAI API, ChatGPT's name is different and you should set it by `--model gpt-35-turbo`. 
-* For the open-source models, you also need to set the environment variable `LLAMA_ROOT` to the directory containing the weights folder for the model (as LLaMA checkpoints are not available on HuggingFace model hub and can only be loaded locally).
+* For the open-source models, you should set the model name equal to the input of HuggingFace models' `.from_pretrained` method. This could either be a local directory (e.g. for the older LLaMA models) or a path to the HuggingFace hub. 
 
 For detailed argument usage, please refer to `run.py`.
 

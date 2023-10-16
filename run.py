@@ -133,7 +133,7 @@ class LLM:
             stop = [] if stop is None else stop
             stop = list(set(stop + ["\n", "Ċ", "ĊĊ", "<0x0A>"])) # In Llama \n is <0x0A>; In OPT \n is Ċ
             stop_token_ids = list(set([self.tokenizer._convert_token_to_id(stop_token) for stop_token in stop] + [self.model.config.eos_token_id]))
-            if "llama" in args.model:
+            if "llama" in args.model.lower():
                 stop_token_ids.remove(self.tokenizer.unk_token_id)
             outputs = self.model.generate(
                 **inputs,
@@ -232,7 +232,7 @@ def main():
         args.max_length = 4096
     elif "gpt-4" in args.model:
         args.max_length = 8192
-    elif "llama-2" in args.model or "llama2" in args.model:
+    elif "llama-2" in args.model.lower() or "llama2" in args.model.lower():
         args.max_length = 4096
 
 

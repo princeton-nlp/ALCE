@@ -103,11 +103,6 @@ def load_model(model_name_or_path, dtype=torch.float16, int8=False, reserve_memo
     # int8: whether to use int8 quantization
     # reserve_memory: how much memory to reserve for the model on each gpu (in GB)
 
-    # Llama: set up the root dir
-    open_source_models = ["llama", "alpaca", "vicuna", "oasst"]
-    if any([m in model_name_or_path for m in open_source_models]):
-        model_name_or_path = os.path.join(os.environ["LLAMA_ROOT"], model_name_or_path)
-
     # Load the FP16 model
     from transformers import AutoModelForCausalLM, AutoTokenizer
     logger.info(f"Loading {model_name_or_path} in {dtype}...")

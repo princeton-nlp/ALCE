@@ -1,0 +1,8 @@
+---
+prompt_file: prompts/qampari_default.json
+eval_file: data/qampari_eval_gtr_top100.json
+shot: 2
+ndoc: 5
+dataset_name: qampari
+tag: gtr
+model: meta-llama/Llama-2-70b-chat-hf
