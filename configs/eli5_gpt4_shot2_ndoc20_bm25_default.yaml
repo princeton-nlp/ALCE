@@ -1,0 +1,9 @@
+---
+prompt_file: prompts/eli5_default.json
+eval_file: data/eli5_eval_bm25_top100.json
+shot: 2
+ndoc: 20
+dataset_name: eli5
+tag: bm25
+model: gpt-4-0613
+openai_api: true

@@ -33,17 +33,18 @@ class LLM:
             OPENAI_API_BASE = os.environ.get("OPENAI_API_BASE")
 
             if args.azure:
-
                 openai.api_key = OPENAI_API_KEY
                 openai.api_base = OPENAI_API_BASE
                 openai.api_type = 'azure'
-                openai.api_version = '2022-12-01' 
+                openai.api_version = '2023-05-15' 
             else: 
                 openai.api_key = OPENAI_API_KEY
                 openai.organization = OPENAI_ORG_ID
 
             self.tokenizer = AutoTokenizer.from_pretrained("gpt2", fast_tokenizer=False) # TODO: For ChatGPT we should use a different one
-            self.total_tokens = 0 # To keep track of how much the API costs
+            # To keep track of how much the API costs
+            self.prompt_tokens = 0
+            self.completion_tokens = 0
         else:
             self.model, self.tokenizer = load_model(args.model)
         
@@ -54,7 +55,7 @@ class LLM:
 
     def generate(self, prompt, max_tokens, stop=None):
         args = self.args
-        if max_tokens == 0:
+        if max_tokens <= 0:
             self.prompt_exceed_max_length += 1
             logger.warning("Prompt exceeds max length and return an empty string as answer. If this happens too many times, it is suggested to make the prompt shorter")
             return ""
@@ -63,25 +64,24 @@ class LLM:
             logger.warning("The model can at most generate < 50 tokens. If this happens too many times, it is suggested to make the prompt shorter")
 
         if args.openai_api:
-            if "turbo" in args.model and not args.azure:
-                # For OpenAI's ChatGPT API, we need to convert text prompt to chat prompt
+            use_chat_api = ("turbo" in args.model and not args.azure) or ("gpt-4" in args.model and args.azure)
+            if use_chat_api:
+                # For chat API, we need to convert text prompts to chat prompts
                 prompt = [
                     {'role': 'system', 'content': "You are a helpful assistant that answers the following questions with proper citations."},
                     {'role': 'user', 'content': prompt}
                 ]
-            else:
-                if "turbo" in args.model:
-                    deploy_name = "gpt-35-turbo-0301"
-                else:
-                    deploy_name = args.model
+            if args.azure:
+                deploy_name = args.model
 
-            if "turbo" in args.model and not args.azure:
+            if use_chat_api:
                 is_ok = False
                 retry_count = 0
                 while not is_ok:
                     retry_count += 1
                     try:
                         response = openai.ChatCompletion.create(
+                            engine=deploy_name if args.azure else None,
                             model=args.model,
                             messages=prompt,
                             temperature=args.temperature,
@@ -96,7 +96,8 @@ class LLM:
                             continue
                         print(error)
                         import pdb; pdb.set_trace()
-                self.total_tokens += response['usage']['total_tokens']
+                self.prompt_tokens += response['usage']['prompt_tokens']
+                self.completion_tokens += response['usage']['completion_tokens']
                 return response['choices'][0]['message']['content']
             else:
                 is_ok = False
@@ -124,7 +125,8 @@ class LLM:
                             continue
                         print(error)
                         import pdb; pdb.set_trace()
-                self.total_tokens += response['usage']['total_tokens']
+                self.prompt_tokens += response['usage']['prompt_tokens']
+                self.completion_tokens += response['usage']['completion_tokens']
                 return response['choices'][0]['text']
         else:
             inputs = self.tokenizer([prompt], return_tensors="pt").to(self.model.device)
@@ -220,8 +222,22 @@ def main():
 
     if "turbo" in args.model:
         # ChatGPT has a longer max length
-        logger.info("Change the max length to 4096 for ChatGPT.")
         args.max_length = 4096
+
+    if "16k" in args.model:
+        args.max_length = 16384
+    elif "32k" in args.model:
+        args.max_length = 32768
+    elif "turbo" in args.model:
+        args.max_length = 4096
+    elif "gpt-4" in args.model:
+        args.max_length = 8192
+    elif "llama-2" in args.model or "llama2" in args.model:
+        args.max_length = 4096
+
+
+    logger.info(f"Set the model max length to {args.max_length} (if not correct, check the code)")
+        
 
     # Load the model or setup the API
     llm = LLM(args)
@@ -388,16 +404,6 @@ def main():
         
         item['output'] = output_array if len(output_array) > 1 else output_array[0]
         
-    # Calculate the price for OpenAI API
-    if args.openai_api:
-        logger.info(f"Total token used: {llm.total_tokens}")
-        if "turbo" in args.model:
-            unit_price = 0.002
-        else:
-            unit_price = 0.02
-        logger.info(f"Unit price: {unit_price}")
-        logger.info(f"Total cost: %.1f" % (llm.total_tokens / 1000 * unit_price))
-    
     logger.info(f"#Cases when prompts exceed max length: {llm.prompt_exceed_max_length}")
     logger.info(f"#Cases when max new tokens < 50: {llm.fewer_than_50}")
 
@@ -425,7 +431,24 @@ def main():
         "data": eval_data,
     }
     if args.openai_api:
-        eval_data["total_cost"] = llm.total_tokens / 1000 * unit_price
+        logger.info(f"Token used: prompt {llm.prompt_tokens}; completion {llm.completion_tokens}")
+        if "turbo" in args.model:
+            p_price, c_price = 0.0015, 0.002
+            if "16k" in args.model:
+                p_price, c_price = 0.003, 0.004
+        elif "gpt4" in args.model or "gpt-4" in args.model:
+            p_price, c_price = 0.03, 0.06
+            if "32k" in args.model:
+                p_price, c_price = 0.06, 0.12
+        else:
+            logger.warn("Cannot find model price")
+            p_price, c_price = 0, 0
+
+        eval_data["total_cost"] = llm.prompt_tokens / 1000 * p_price + llm.completion_tokens / 1000 * c_price        
+
+        logger.info(f"Unit price (Oct 16, 2023, prompt/completion): {p_price}/{c_price}")
+        logger.info(f"Total cost: %.1f" % (eval_data["total_cost"]))
+
         if args.azure:
             eval_data["azure_filter_fail"] = llm.azure_filter_fail 
 
