@@ -25,8 +25,9 @@ This repository also includes code to reproduce the baselines in our paper.
   - [Code Structure](#code-structure)
   - [Reproducing Baselines](#reproducing-baselines)
   - [Evaluation](#evaluation)
+  - [Human Evaluation](#human-evaluation)
   - [Bug or Questions](#bug-or-questions)
-  - [Citation](#citatin)
+  - [Citation](#citation)
 
 
 ## Requirements
@@ -151,6 +152,11 @@ python eval.py --f {path/to/result/file} --citations --claims_nli --mauve
 ```
 
 The evaluation result will be saved in `result/`, with the same name as the input and a suffix `.score`.
+
+## Human Evaluation
+
+The results from our human evaluation (Section 6) are located under the directory [`human_eval`](human_eval). 
+Both the data and the analysis are available, please refer to the directory for details. 
 
 ## Bug or Questions?
 
