@@ -76,7 +76,7 @@ Building the dense index can be expensive for GPU memory (we use 80GB GPUs for t
 If you find this step to be too expensive, you can also download it using:
 ```bash
 wget https://huggingface.co/datasets/princeton-nlp/gtr-t5-xxl-wikipedia-psgs_w100-index/resolve/main/gtr_wikipedia_index.pkl
-export GTR=$PWD/gtr_wikipedia_index.pkl
+export GTR_EMB=$PWD/gtr_wikipedia_index.pkl
 ```
 
 To reproduce the DPR retrieval, we refer the DPR [repo](https://github.com/facebookresearch/DPR), which we used the original DPR checkpoint trained on NQ.

@@ -95,7 +95,7 @@ def gtr_wiki_retrieval(data):
         ret = []
         for i in range(idx.size(0)):
             title, text = docs[idx[i].item()].split("\n")
-            ret.append({"id": str(idx[i].item()+1),"title": title, "text": text, "score": score[i]})
+            ret.append({"id": str(idx[i].item()+1),"title": title, "text": text, "score": score[i].item()})
         data[qi]["docs"] = ret
         q = q.to("cpu")
 
