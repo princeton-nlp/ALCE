@@ -531,7 +531,8 @@ def main():
         result["claims_nli"] = compute_claims(normalized_data)
 
     print(result)
-    json.dump(result, open(args.f + ".score", "w"), indent=4)
+    with open(args.f + ".score", "w") as f:
+        json.dump(result, f, indent=4)
 
 
 if __name__ == "__main__":
