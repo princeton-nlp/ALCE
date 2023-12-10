@@ -1,4 +1,4 @@
-## Human evaluation results
+# Human Evaluation
 
 In this directory, you can find the human evaluation results in two files: `human_eval_utility_completed.json` and `human_eval_citations_completed.json`. 
 We evaluated a sample of ASQA and ELI5 results from select models. For more details, please refer to the paper. 

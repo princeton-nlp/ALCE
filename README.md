@@ -25,8 +25,9 @@ This repository also includes code to reproduce the baselines in our paper.
   - [Code Structure](#code-structure)
   - [Reproducing Baselines](#reproducing-baselines)
   - [Evaluation](#evaluation)
+  - [Human Evaluation](#human-evaluation)
   - [Bug or Questions](#bug-or-questions)
-  - [Citation](#citatin)
+  - [Citation](#citation)
 
 
 ## Requirements
@@ -75,7 +76,7 @@ Building the dense index can be expensive for GPU memory (we use 80GB GPUs for t
 If you find this step to be too expensive, you can also download it using:
 ```bash
 wget https://huggingface.co/datasets/princeton-nlp/gtr-t5-xxl-wikipedia-psgs_w100-index/resolve/main/gtr_wikipedia_index.pkl
-export GTR=$PWD/gtr_wikipedia_index.pkl
+export GTR_EMB=$PWD/gtr_wikipedia_index.pkl
 ```
 
 To reproduce the DPR retrieval, we refer the DPR [repo](https://github.com/facebookresearch/DPR), which we used the original DPR checkpoint trained on NQ.
@@ -151,6 +152,11 @@ python eval.py --f {path/to/result/file} --citations --claims_nli --mauve
 ```
 
 The evaluation result will be saved in `result/`, with the same name as the input and a suffix `.score`.
+
+## Human Evaluation
+
+The results from our human evaluation (Section 6) are located under the directory [`human_eval`](human_eval). 
+Both the data and the analysis are available, please refer to the directory for details. 
 
 ## Bug or Questions?
 
