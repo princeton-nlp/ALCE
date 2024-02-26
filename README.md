@@ -169,9 +169,10 @@ If you have any questions related to the code or the paper, feel free to email T
 Please cite our paper if you use ALCE in your work:
 
 ```bibtex
-@article{gao2023enabling,
+@inproceedings{gao2023enabling,
    title={Enabling Large Language Models to Generate Text with Citations},
    author={Gao, Tianyu and Yen, Howard and Yu, Jiatong and Chen, Danqi},
-   year={2023}
+   year={2023},
+   booktitle={Empirical Methods in Natural Language Processing (EMNLP)},
 }
 ```
