@@ -43,7 +43,7 @@ You can download datasets (along with retrieval results) by running the followin
 bash download_data.sh
 ```
 
-All the data will be stored in `data/`. Our data included top-100 DPR/GTR retrieved results for ASQA and QAMPARI, and top-100 BM25 retrieved results for QAMPARI. We also provide reranked oracle retrieval results, where top-5 passages can achieve the same recall as the original top-100 recall.
+All the data will be stored in `data/`. Our data included top-100 DPR/GTR retrieved results for ASQA and QAMPARI, and top-100 BM25 retrieved results for ELI5. We also provide reranked oracle retrieval results, where top-5 passages can achieve the same recall as the original top-100 recall.
 
 ### Retrieval
 
