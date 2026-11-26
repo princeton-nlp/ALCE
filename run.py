@@ -146,6 +146,17 @@ class LLM:
             return generation
 
 
+def str2bool(v):
+    # argparse's type=bool treats any non-empty string (including "False") as True
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ("true", "t", "yes", "y", "1"):
+        return True
+    if v.lower() in ("false", "f", "no", "n", "0"):
+        return False
+    raise argparse.ArgumentTypeError(f"Boolean value expected, got {v!r}")
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", type=str, default=None, help="Path to the config file")
@@ -180,15 +191,15 @@ def main():
     parser.add_argument("--ndoc", type=int, help="Number of documents")
     parser.add_argument("--shot", type=int, help="Number of ICL demonstrations")
     parser.add_argument("--seed", type=int, default=42, help="Seed for the random number generator")
-    parser.add_argument("--no_doc_in_demo", type=bool, default=False, help="Whether to remove the documents in the demos")
-    parser.add_argument("--fewer_doc_in_demo", type=bool, default=False, help="Whether to use fewer documents in the demos")
+    parser.add_argument("--no_doc_in_demo", type=str2bool, default=False, help="Whether to remove the documents in the demos")
+    parser.add_argument("--fewer_doc_in_demo", type=str2bool, default=False, help="Whether to use fewer documents in the demos")
     parser.add_argument("--ndoc_in_demo", type=int, default=None, help="When using --fewer_doc_in_demo, use this to designate how many docs in demo")
 
     # Model and name
     parser.add_argument("--dataset_name", type=str, help="Name of the dataset (for saving)")
     parser.add_argument("--tag", type=str, help="Tag of run (for saving)")
     parser.add_argument("--model", type=str, help="Model to use")
-    parser.add_argument("--openai_api", type=bool, default=False, help="Whether to use OpenAI API")
+    parser.add_argument("--openai_api", type=str2bool, default=False, help="Whether to use OpenAI API")
     parser.add_argument("--azure", action="store_true", default=False, help="Azure openai API")
 
     # Decoding
@@ -202,14 +213,14 @@ def main():
     parser.add_argument("--use_shorter", type=str, default=None, help="Whether to use summary data or extraction data for documents. Option: None, `summary`, `extraction`")
 
     # Interactive
-    parser.add_argument("--interactive", type=bool, default=False, help="Whether to run in interactive mode")
+    parser.add_argument("--interactive", type=str2bool, default=False, help="Whether to run in interactive mode")
     parser.add_argument("--interactive_query", type=str, default=None, help="The query to use in interactive mode, either `doc_id` (corresponding to interact in paper) or `search` (corresponding to inlinesearch in paper).")
     parser.add_argument("--retriever", type=str, default=None, help="When using interactive search mode, which retriever to use. Options: `tfidf`, `gtr-t5-large`")
     parser.add_argument("--retriever_device", type=str, default="cuda", help="Where to put the dense retriever if using. Options: `cuda`, `cpu`")
-    parser.add_argument("--retrieve_in_all_docs", type=bool, default=False, help="Retrieve in all documents instead of just top ndoc")
+    parser.add_argument("--retrieve_in_all_docs", type=str2bool, default=False, help="Retrieve in all documents instead of just top ndoc")
     parser.add_argument("--max_turn", type=int, default=10, help="Max number of all actions")
     parser.add_argument("--max_doc_show", type=int, default=3, help="Max number of documents to show at one time.")
-    parser.add_argument("--force_cite_show", type=bool, default=False, help="Force citing the documents that are shown to the model")
+    parser.add_argument("--force_cite_show", type=str2bool, default=False, help="Force citing the documents that are shown to the model")
 
 
     # Load config
