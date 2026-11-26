@@ -291,10 +291,10 @@ def main():
         logger.warning(f"There are {incomplete_doc_list} questions that have incomplete document list (may due to a lot of them are filtered out by summary/extraction).")
 
     # Load retriever for interactive search 
+    gtr_model = None
     if args.interactive and args.interactive_query == "search" and "gtr" in args.retriever:
         from sentence_transformers import SentenceTransformer
         gtr_model = SentenceTransformer(f'sentence-transformers/{args.retriever}', device=args.retriever_device)
-        from searcher import SearcherWithinDocs
 
     for idx, item in enumerate(tqdm(eval_data)):
         prompt = item['prompt']
